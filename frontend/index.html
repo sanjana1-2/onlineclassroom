@@ -53,10 +53,16 @@
         },
       }
     </script>
+    <!-- Polyfills for WebRTC/Buffer -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/buffer/6.0.3/buffer.min.js"></script>
     <script>
       window.global = window;
-      var process = { env: { NODE_ENV: 'development' } };
-      var Buffer = { isBuffer: function() { return false; } }; // Basic polyfill or we can use a library
+      window.Buffer = window.Buffer || buffer.Buffer;
+      window.process = { 
+        env: { NODE_ENV: 'production' },
+        version: '',
+        nextTick: function(fn) { setTimeout(fn, 0); }
+      };
     </script>
   </head>
   <body>
