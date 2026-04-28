@@ -49,23 +49,42 @@ app.get('/test-server', (req, res) => {
 });
 
 // Serve Frontend (Universal Catch-all)
+const rootPath = path.resolve(__dirname, '../../../');
+console.log(`[INFO] Root Path discovered as: ${rootPath}`);
+try {
+  const rootFiles = fs.readdirSync(rootPath);
+  console.log(`[INFO] Root directory contents: ${rootFiles.join(', ')}`);
+  if (rootFiles.includes('frontend')) {
+    const frontendFiles = fs.readdirSync(path.join(rootPath, 'frontend'));
+    console.log(`[INFO] Frontend directory contents: ${frontendFiles.join(', ')}`);
+    if (frontendFiles.includes('dist')) {
+      const distFiles = fs.readdirSync(path.join(rootPath, 'frontend/dist'));
+      console.log(`[INFO] Dist directory contents: ${distFiles.join(', ')}`);
+    }
+  }
+} catch (e) {
+  console.log('[ERROR] Failed to list directories:', e.message);
+}
+
 const possibleDistPaths = [
+  path.join(rootPath, 'frontend/dist'),
   path.join(__dirname, '../../frontend/dist'),
   path.join(process.cwd(), '../frontend/dist'),
-  path.join(process.cwd(), 'frontend/dist'),
-  path.resolve('frontend/dist'),
-  path.resolve('../frontend/dist')
+  path.resolve('frontend/dist')
 ];
 
 let distPath = possibleDistPaths[0];
 for (const p of possibleDistPaths) {
-  if (fs.existsSync(path.join(p, 'index.html'))) {
-    distPath = p;
-    break;
-  }
+  try {
+    if (fs.existsSync(p) && fs.existsSync(path.join(p, 'index.html'))) {
+      distPath = p;
+      console.log(`[INFO] FOUND frontend at: ${distPath}`);
+      break;
+    }
+  } catch (err) {}
 }
 
-console.log(`[INFO] Serving frontend from: ${distPath}`);
+console.log(`[INFO] Final choice for frontend serving: ${distPath}`);
 
 // Serve static files
 app.use(express.static(distPath));
@@ -80,8 +99,8 @@ app.get('*', (req, res, next) => {
   const indexPath = path.join(distPath, 'index.html');
   res.sendFile(indexPath, (err) => {
     if (err) {
-      console.log('[ERROR] Frontend index.html not found at:', indexPath);
-      res.status(404).send('Frontend not built or not found. Please run "npm run build" in the frontend directory.');
+      console.log('[ERROR] Failed to send index.html from:', indexPath);
+      res.status(404).send(`Frontend not found at ${indexPath}. Please verify build.`);
     }
   });
 });
