@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { config } from './config/environment.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
@@ -42,22 +43,43 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
-// Serve Frontend in Production
-const distPath = path.join(__dirname, '../../frontend/dist');
-console.log(`[INFO] Checking for frontend at: ${distPath}`);
+// Serve Frontend (Universal Catch-all)
+const possibleDistPaths = [
+  path.join(__dirname, '../../frontend/dist'),
+  path.join(process.cwd(), '../frontend/dist'),
+  path.join(process.cwd(), 'frontend/dist'),
+  path.resolve('frontend/dist'),
+  path.resolve('../frontend/dist')
+];
 
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
-  console.log('[INFO] Production mode detected. Serving static files.');
-  app.use(express.static(distPath));
-  
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(distPath, 'index.html'));
+let distPath = possibleDistPaths[0];
+for (const p of possibleDistPaths) {
+  if (fs.existsSync(path.join(p, 'index.html'))) {
+    distPath = p;
+    break;
+  }
+}
+
+console.log(`[INFO] Serving frontend from: ${distPath}`);
+
+// Serve static files
+app.use(express.static(distPath));
+
+// Handle React routing
+app.get('*', (req, res, next) => {
+  // Skip API routes
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+
+  const indexPath = path.join(distPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.log('[ERROR] Frontend index.html not found at:', indexPath);
+      res.status(404).send('Frontend not built or not found. Please run "npm run build" in the frontend directory.');
     }
   });
-} else {
-  console.log(`[INFO] Current NODE_ENV is: ${process.env.NODE_ENV}. Static serving skipped.`);
-}
+});
 
 // Error handling
 app.use(notFound);
