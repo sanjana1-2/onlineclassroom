@@ -48,6 +48,16 @@ app.get('/test-server', (req, res) => {
   res.status(200).send('Backend is Alive and Reaching app.js!');
 });
 
+app.get('/debug-html', (req, res) => {
+  const indexPath = path.join(distPath, 'index.html');
+  try {
+    const content = fs.readFileSync(indexPath, 'utf8');
+    res.status(200).send(`HTML Path: ${indexPath}\n\nContent:\n${content}`);
+  } catch (e) {
+    res.status(500).send(`Error reading HTML: ${e.message}`);
+  }
+});
+
 // Serve Frontend (Universal Catch-all)
 const rootPath = path.resolve(__dirname, '../../../');
 console.log(`[INFO] Root Path discovered as: ${rootPath}`);
