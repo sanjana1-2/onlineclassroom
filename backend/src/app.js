@@ -43,14 +43,20 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve Frontend in Production
-if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '../../frontend/dist');
+const distPath = path.join(__dirname, '../../frontend/dist');
+console.log(`[INFO] Checking for frontend at: ${distPath}`);
+
+if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
+  console.log('[INFO] Production mode detected. Serving static files.');
   app.use(express.static(distPath));
+  
   app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
       res.sendFile(path.join(distPath, 'index.html'));
     }
   });
+} else {
+  console.log(`[INFO] Current NODE_ENV is: ${process.env.NODE_ENV}. Static serving skipped.`);
 }
 
 // Error handling
