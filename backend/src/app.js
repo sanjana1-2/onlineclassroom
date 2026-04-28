@@ -43,6 +43,11 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
+// Server Diagnostic
+app.get('/test-server', (req, res) => {
+  res.status(200).send('Backend is Alive and Reaching app.js!');
+});
+
 // Serve Frontend (Universal Catch-all)
 const possibleDistPaths = [
   path.join(__dirname, '../../frontend/dist'),
