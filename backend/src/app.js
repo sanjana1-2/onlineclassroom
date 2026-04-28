@@ -42,10 +42,6 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
-// Error handling
-app.use(notFound);
-app.use(errorHandler);
-
 // Serve Frontend in Production
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.join(__dirname, '../../frontend/dist');
@@ -56,5 +52,9 @@ if (process.env.NODE_ENV === 'production') {
     }
   });
 }
+
+// Error handling
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;
