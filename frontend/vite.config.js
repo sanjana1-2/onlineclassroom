@@ -1,6 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const socketIoClientPackageJson = require.resolve('socket.io-client/package.json');
+const socketIoClientDist = path.resolve(path.dirname(socketIoClientPackageJson), 'dist/socket.io.esm.min.js');
 
 export default defineConfig({
   plugins: [react()],
@@ -12,7 +17,7 @@ export default defineConfig({
       // Use the pre-built browser ESM bundle — bypasses engine.io-client node.js files entirely
       {
         find: 'socket.io-client',
-        replacement: path.resolve('./node_modules/socket.io-client/dist/socket.io.esm.min.js'),
+        replacement: socketIoClientDist,
       },
       // Node.js polyfills for simple-peer
       { find: 'events', replacement: 'events' },
