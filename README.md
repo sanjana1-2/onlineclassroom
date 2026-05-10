@@ -3,7 +3,7 @@
 A scalable, real-time educational platform similar to Zoom, built with modern web technologies. Designed specifically for educational institutions with features for live streaming, engagement, and AI-powered learning tools.
 
 ## Features
-
+.
 ### Core Features
 
 - **Real-time Video/Audio Streaming** - WebRTC-based peer-to-peer communication
