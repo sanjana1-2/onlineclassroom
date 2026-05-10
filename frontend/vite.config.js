@@ -9,9 +9,6 @@ const socketIoClientDist = path.resolve(path.dirname(socketIoClientPackageJson),
 
 export default defineConfig({
   plugins: [react()],
-  define: {
-    global: 'globalThis',
-  },
   resolve: {
     alias: [
       // Use the pre-built browser ESM bundle — bypasses engine.io-client node.js files entirely
