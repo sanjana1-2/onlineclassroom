@@ -1,3 +1,8 @@
+// Polyfill Buffer for simple-peer BEFORE any other imports
+import { Buffer } from 'buffer';
+globalThis.Buffer = Buffer;
+window.Buffer = Buffer;
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';

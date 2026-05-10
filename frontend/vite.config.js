@@ -5,12 +5,14 @@ export default defineConfig({
   plugins: [react()],
   define: {
     global: 'globalThis',
+    'process.env': JSON.stringify({ NODE_ENV: 'production' }),
   },
   resolve: {
     alias: {
       // Polyfill Node.js built-ins used by simple-peer
       events: 'events',
       util: 'util',
+      buffer: 'buffer',
     },
   },
   server: {
@@ -23,6 +25,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['simple-peer'],
+    include: ['simple-peer', 'buffer', 'events', 'util'],
   },
 });
