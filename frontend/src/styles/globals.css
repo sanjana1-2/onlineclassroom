@@ -10,6 +10,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #0f172a;
+  color: #f1f5f9;
+  min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -45,8 +48,9 @@ html {
   background-clip: text;
 }
 
-.bg-premium {
-  background: radial-gradient(circle at top left, #1e293b, #0f172a, #020617);
+.bg-premium,
+.bg-app {
+  background: radial-gradient(circle at top left, #1e293b, #0f172a, #020617) !important;
 }
 
 /* Custom Scrollbar */
